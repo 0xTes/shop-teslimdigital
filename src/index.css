@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-peach: #FDF6F0;
+  --color-brand-peach-dark: #F5E6D3;
+  --color-brand-teal: #0D9488;
+  --color-brand-teal-dark: #0F766E;
+  --color-brand-teal-light: #CCFBF1;
+}
+
+body {
+  background-color: var(--color-brand-peach);
+  color: #1e293b;
+}
