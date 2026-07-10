@@ -1,10 +1,12 @@
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
-import { Star, ShoppingCart, Heart, Share2 } from 'lucide-react';
+import { Star, ShoppingCart, Heart } from 'lucide-react';
 import { useProduct } from '../hooks/useProducts';
 import { useCartStore } from '../stores/cartStore';
 import ReviewSection from '../components/Product/ReviewSection';
 import RelatedProducts from '../components/Product/RelatedProducts';
+import LoadingSpinner from "../components/UI/LoadingSpinner";
+import { formatNaira } from "../utils/formatCurrency";
 
 export default function ProductPage() {
   const { slug } = useParams();
@@ -74,11 +76,11 @@ export default function ProductPage() {
 
           <div className="flex items-baseline gap-3">
             <span className="text-3xl font-bold text-brand-teal">
-              ₦{product.price}
+              {formatNaira(product.price)}
             </span>
             {product.compareAtPrice && (
               <span className="text-xl text-gray-400 line-through">
-                ₦{product.compareAtPrice}
+                {formatNaira(product.compareAtPrice)}
               </span>
             )}
           </div>
@@ -116,7 +118,7 @@ export default function ProductPage() {
           <div className="bg-brand-peach-dark rounded-lg p-4 space-y-2">
             <p className="text-sm font-medium">Shipping</p>
             <p className="text-sm text-gray-600">
-              Free shipping on orders over ₦50,000. Delivery within 3-5 business days.
+              Free shipping on orders over ₦150,000. Delivery within 3-5 business days.
             </p>
           </div>
         </div>

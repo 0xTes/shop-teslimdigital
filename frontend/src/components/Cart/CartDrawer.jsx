@@ -1,16 +1,28 @@
 import { Link } from 'react-router-dom';
+import { useEffect } from "react";
 import { X, ShoppingBag } from 'lucide-react';
 import { useUiStore } from '../../stores/uiStore';
 import { useCart } from '../../hooks/useCart';
 import { formatNaira } from '../../utils/formatCurrency';
-import CartLineItem from './CartLineItem';
+import CartLineItem from "./CartItem";
+
 
 export default function CartDrawer() {
   const isCartOpen = useUiStore((s) => s.isCartOpen);
   const closeCart = useUiStore((s) => s.closeCart);
   const { items, totalPrice } = useCart();
 
-  if (!isCartOpen) return null;
+  useEffect(() => {  
+   if (!isCartOpen) return;
+
+   document.body.style.overflow = "hidden";
+
+   return () => {
+      document.body.style.overflow = "";
+      };
+  }, [isCartOpen]);
+
+   if (!isCartOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-modal="true" aria-label="Shopping cart">
@@ -23,7 +35,8 @@ export default function CartDrawer() {
       <div className="relative bg-white w-full max-w-md h-full shadow-xl flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-gray-100">
           <h2 className="text-lg font-bold flex items-center gap-2">
-            <ShoppingBag className="w-5 h-5" aria-hidden="true" /> Your Cart
+            <ShoppingBag className="w-5 h-5" aria-hidden="true" />
+              Your Cart ({items.length})
           </h2>
           <button
             onClick={closeCart}
@@ -36,9 +49,16 @@ export default function CartDrawer() {
 
         <div className="flex-1 overflow-y-auto p-4">
           {items.length === 0 ? (
-            <p className="text-gray-500 text-center mt-10">Your cart is empty.</p>
+            <div className="mt-10 text-center space-y-4">
+              <p className="text-gray-500"> Your cart is empty. </p>
+              <Link
+                to="/shop"
+                onClick={closeCart}
+                className="inline-block rounded-lg bg-brand-teal px-5 py-2 text-white font-medium hover:bg-brand-teal-dark transition"> Continue Shopping
+              </Link>
+            </div>
           ) : (
-            <ul>
+            <ul className="space-y-2">
               {items.map((item) => (
                 <CartLineItem key={item.id} item={item} />
               ))}
