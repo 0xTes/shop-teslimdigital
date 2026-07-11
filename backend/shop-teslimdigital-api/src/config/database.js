@@ -1,12 +1,13 @@
 const { Sequelize } = require('sequelize');
+const env = require('./env');
 
 const sequelize = new Sequelize(
-  process.env.DATABASE_URL || 'postgres://user:pass@localhost:5432/shopdb',
+  env.databaseUrl,
   {
     dialect: 'postgres',
     logging: false,
     dialectOptions: {
-      ssl: process.env.NODE_ENV === 'production' ? {
+      ssl: env.nodeEnv === 'production' ? {
         require: true,
         rejectUnauthorized: false
       } : false
