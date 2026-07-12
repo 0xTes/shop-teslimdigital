@@ -7,6 +7,6 @@ const { orderValidator } = require('../middleware/validate');
 // Checkout works for guests as well as logged-in users.
 router.post('/', optionalAuth, orderValidator, orderController.createOrder);
 router.get('/mine', requireAuth, orderController.getMyOrders);
-router.get('/:orderId', orderController.getOrder);
+router.get('/:orderId', requireAuth, orderController.getOrder);
 
 module.exports = router;

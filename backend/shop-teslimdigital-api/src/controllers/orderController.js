@@ -119,6 +119,14 @@ exports.getOrder = async (req, res) => {
       return res.status(404).json({ error: 'Order not found' });
     }
 
+    // Only the owner may access this order.
+   // Guest orders will be handled through a dedicated lookup endpoint.
+    if (!order.userId || order.userId !== req.userId) {
+      return res.status(403).json({
+    error: 'You are not authorized to access this order'
+  });
+}
+
     res.json(order);
   } catch (error) {
     console.error('Fetch order error:', error);
