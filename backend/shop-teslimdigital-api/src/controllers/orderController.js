@@ -147,3 +147,44 @@ exports.getMyOrders = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch orders' });
   }
 };
+
+exports.lookupGuestOrder = async (req, res) => {
+  try {
+    const { orderNumber, email } = req.query;
+
+    if (!orderNumber || !email) {
+      return res.status(400).json({
+        error: 'Order number and email are required'
+      });
+    }
+
+    const order = await Order.findOne({
+      where: {
+        orderNumber,
+        email,
+        userId: null
+      },
+      include: [
+        {
+          model: OrderItem,
+          as: 'items'
+        }
+      ]
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        error: 'Order not found'
+      });
+    }
+
+    res.json(order);
+
+  } catch (error) {
+    console.error('Guest order lookup error:', error);
+
+    res.status(500).json({
+      error: 'Failed to fetch order'
+    });
+  }
+};
