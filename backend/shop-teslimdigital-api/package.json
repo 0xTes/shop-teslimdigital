@@ -7,7 +7,8 @@
     "dev": "nodemon app.js",
     "start": "node app.js",
     "seed": "node seeders/seed.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "migrate": "node scripts/migrate.js",
+    "test": "node --test test/orderLifecycleService.test.js"
   },
   "keywords": [],
   "author": "",

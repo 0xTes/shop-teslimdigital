@@ -7,6 +7,7 @@ import SortDropdown from '../components/Filters/SortDropdown';
 import Pagination from '../components/UI/Pagination';
 import DealBanner from '../components/WeeklyDeal/DealBanner';
 import { useProducts } from '../hooks/useProducts';
+import LoadingSpinner from '../components/UI/LoadingSpinner';
 
 export default function Shop() {
   const [searchParams, setSearchParams] = useSearchParams();

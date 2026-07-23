@@ -58,7 +58,7 @@ export default function ProductPage() {
                   -{discount}%
                 </span>
               )}
-              <span className="text-gray-500 text-sm">{product.category}</span>
+              <span className="text-gray-500 text-sm">{product.Category?.name || 'Shop'}</span>
             </div>
             <h1 className="text-3xl font-bold text-slate-900">{product.name}</h1>
             <div className="flex items-center gap-2 mt-2">

@@ -11,6 +11,11 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import OrderSuccess from './pages/OrderSuccess';
+import GuestOrderLookup from './pages/GuestOrderLookup';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import NotFound from './pages/NotFound';
+import AdminDashboard from './pages/AdminDashboard';
 
 export default function App() {
   return (
@@ -25,6 +30,11 @@ export default function App() {
         <Route path="register" element={<Register />} />
         <Route path="profile" element={<Profile />} />
         <Route path="order-success" element={<OrderSuccess />} />
+        <Route path="order-lookup" element={<GuestOrderLookup />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password" element={<ResetPassword />} />
+        <Route path="admin" element={<AdminDashboard />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );

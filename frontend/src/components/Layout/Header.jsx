@@ -13,7 +13,7 @@ export default function Header() {
   const toggleCart = useUiStore((s) => s.toggleCart);
   const toggleMobileNav = useUiStore((s) => s.toggleMobileNav);
   const { totalItems } = useCart();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-100">
@@ -33,6 +33,8 @@ export default function Header() {
         <nav aria-label="Main navigation" className="hidden md:flex items-center gap-2">
           <NavLink to="/" end className={navLinkClass}>Home</NavLink>
           <NavLink to="/shop" className={navLinkClass}>Shop</NavLink>
+          <NavLink to="/order-lookup" className={navLinkClass}>Order lookup</NavLink>
+          {user?.role === 'admin' && <NavLink to="/admin" className={navLinkClass}>Admin</NavLink>}
         </nav>
 
         <div className="flex items-center gap-1">

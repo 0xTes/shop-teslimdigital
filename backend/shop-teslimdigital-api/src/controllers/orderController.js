@@ -1,7 +1,8 @@
 const { validationResult } = require('express-validator');
-const { sequelize, Order, OrderItem, Product } = require('../models');
+const { sequelize, Order, OrderItem, Product, Shipping } = require('../models');
 const shippingService = require('../services/shippingService');
 const emailService = require('../services/emailService');
+const paymentService = require('../services/paymentService');
 
 const generateOrderNumber = () => {
   const timestamp = Date.now().toString(36).toUpperCase();
@@ -24,7 +25,8 @@ exports.createOrder = async (req, res) => {
     const productIds = items.map((i) => i.productId);
     const products = await Product.findAll({
       where: { id: productIds, isActive: true },
-      transaction
+      transaction,
+      lock: transaction.LOCK.UPDATE
     });
 
     const productMap = new Map(products.map((p) => [p.id, p]));
@@ -58,8 +60,15 @@ exports.createOrder = async (req, res) => {
     const shippingCost = shippingService.calculateShippingCost(shipping.shippingMethod, subtotal);
     const total = subtotal + shippingCost;
 
+    const orderNumber = generateOrderNumber();
+    const payment = paymentService.createPaymentRequest({
+      orderNumber,
+      amount: total,
+      provider: req.body.paymentProvider
+    });
+
     const order = await Order.create({
-      orderNumber: generateOrderNumber(),
+      orderNumber,
       userId: req.userId || null,
       email: shipping.email,
       phone: shipping.phone,
@@ -74,7 +83,16 @@ exports.createOrder = async (req, res) => {
         city: shipping.city,
         state: shipping.state,
         postalCode: shipping.postalCode || null
-      }
+      },
+      paymentMethod: req.body.paymentMethod || 'bank_transfer',
+      paymentProvider: payment.provider,
+      paymentReference: payment.reference,
+      statusHistory: [{
+        from: null,
+        to: 'pending',
+        at: new Date().toISOString(),
+        actorId: req.userId || null
+      }]
     }, { transaction });
 
     await OrderItem.bulkCreate(
@@ -100,7 +118,12 @@ exports.createOrder = async (req, res) => {
     res.status(201).json({
       orderId: order.id,
       orderNumber: order.orderNumber,
-      total: order.total
+      total: order.total,
+      payment: {
+        provider: payment.provider,
+        reference: payment.reference,
+        requiresProviderRedirect: payment.requiresProviderRedirect
+      }
     });
   } catch (error) {
     await transaction.rollback();
@@ -112,7 +135,7 @@ exports.createOrder = async (req, res) => {
 exports.getOrder = async (req, res) => {
   try {
     const order = await Order.findByPk(req.params.orderId, {
-      include: [{ model: OrderItem, as: 'items' }]
+      include: [{ model: OrderItem, as: 'items' }, { model: Shipping, as: 'shipping' }]
     });
 
     if (!order) {
@@ -138,7 +161,7 @@ exports.getMyOrders = async (req, res) => {
   try {
     const orders = await Order.findAll({
       where: { userId: req.userId },
-      include: [{ model: OrderItem, as: 'items' }],
+      include: [{ model: OrderItem, as: 'items' }, { model: Shipping, as: 'shipping' }],
       order: [['createdAt', 'DESC']]
     });
     res.json(orders);
@@ -168,7 +191,8 @@ exports.lookupGuestOrder = async (req, res) => {
         {
           model: OrderItem,
           as: 'items'
-        }
+        },
+        { model: Shipping, as: 'shipping' }
       ]
     });
 

@@ -52,7 +52,35 @@ const Order = sequelize.define('Order', {
   paymentStatus: {
     type: DataTypes.ENUM('unpaid', 'paid', 'refunded'),
     defaultValue: 'unpaid'
+  },
+  paymentProvider: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  paymentReference: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: true
+  },
+  paidAt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  cancelledAt: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  statusHistory: {
+    type: DataTypes.JSONB,
+    allowNull: false,
+    defaultValue: []
   }
+}, {
+  indexes: [
+    { fields: ['userId', 'createdAt'] },
+    { fields: ['email', 'orderNumber'] },
+    { fields: ['status', 'createdAt'] }
+  ]
 });
 
 module.exports = Order;

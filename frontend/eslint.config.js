@@ -15,13 +15,18 @@ export default defineConfig([
     ],
     languageOptions: {
       globals: {
+        ...globals.browser,
         require: "readonly",
         module: "writable",
         exports: "writable",
         process: "readonly",
         __dirname: "readonly",
       },
-      sourceType: "commonjs",
+      sourceType: "module",
+      parserOptions: {
+        ecmaVersion: "latest",
+        ecmaFeatures: { jsx: true },
+      },
     },
   },
-];
+]);

@@ -70,6 +70,7 @@ export default function Login() {
         <p className="text-sm text-center text-gray-500">
           Don't have an account? <Link to="/register" className="text-brand-teal font-medium hover:underline">Register</Link>
         </p>
+        <p className="text-sm text-center"><Link to="/forgot-password" className="text-brand-teal font-medium hover:underline">Forgot your password?</Link></p>
       </form>
     </div>
   );

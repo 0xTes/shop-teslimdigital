@@ -27,8 +27,11 @@ const OrderItem = sequelize.define('OrderItem', {
   quantity: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 1
+    defaultValue: 1,
+    validate: { min: 1 }
   }
+}, {
+  indexes: [{ fields: ['orderId'] }, { fields: ['productId'] }]
 });
 
 module.exports = OrderItem;

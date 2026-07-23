@@ -17,6 +17,7 @@ const STATUS_LABELS = {
 
 export default function Profile() {
   const { user, isAuthenticated, logout } = useAuth();
+  const hasStoredToken = Boolean(localStorage.getItem('token'));
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ['orders', 'mine'],
@@ -27,8 +28,12 @@ export default function Profile() {
     enabled: isAuthenticated
   });
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !hasStoredToken) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (!isAuthenticated) {
+    return <div className="flex justify-center py-20"><LoadingSpinner /></div>;
   }
 
   return (

@@ -9,8 +9,12 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
+const allowedOrigins = env.frontendUrl.split(',').map((origin) => origin.trim()).filter(Boolean);
 app.use(cors({
-  origin: env.frontendUrl,
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Origin is not allowed by CORS'));
+  },
   credentials: true
 }));
 
@@ -22,8 +26,8 @@ app.use('/api/', rateLimit({
 }));
 
 app.use(morgan('combined'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // Routes
 app.use('/api/auth', require('./src/routes/auth'));
@@ -34,6 +38,7 @@ app.use('/api/orders', require('./src/routes/orders'));
 app.use('/api/reviews', require('./src/routes/reviews'));
 app.use('/api/deals', require('./src/routes/deals'));
 app.use('/api/users', require('./src/routes/users'));
+app.use('/api/admin', require('./src/routes/admin'));
 
 // Health check
 app.get('/health', (req, res) => {
@@ -46,6 +51,8 @@ app.use(require('./src/middleware/errorHandler'));
 async function startServer() {
   try {
     await sequelize.authenticate();
+    // Schema changes are applied by `npm run migrate` in production. Sync is
+    // retained for zero-config local development and never alters existing tables.
     await sequelize.sync();
 
     app.listen(env.port, () => {
@@ -57,6 +64,9 @@ async function startServer() {
   }
 }
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
 
 module.exports = app;
+module.exports.startServer = startServer;

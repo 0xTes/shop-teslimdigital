@@ -7,22 +7,22 @@ import LoadingSpinner from '../components/UI/LoadingSpinner';
 import SEOMeta from '../components/SEO/SEOMeta';
 
 export default function Home() {
-  const { products, isLoading } = useFeaturedProducts();
+  const { products, isLoading, isError } = useFeaturedProducts();
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <SEOMeta
         title="Home"
-        description="Quality electronics and gadgets, delivered across Nigeria. Shop phones, laptops, audio and more at Teslim Digital Shop."
-        url={typeof window !== 'undefined' ? window.location.href : ''}
+        description="Shop Teslim Digital merchandise, books, campaigns, and practical gadgets."
+        url={typeof window !== 'undefined' ? window.location.href : undefined}
       />
 
       <section className="text-center py-12 mb-8">
         <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-          Quality tech, delivered to your door
+          Meaningful goods, delivered to your door
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-          Phones, laptops, audio and smart home gadgets — genuine products, fair prices.
+          Merchandise, books, campaigns, and practical gadgets — thoughtfully selected for you.
         </p>
         <Link
           to="/shop"
@@ -43,9 +43,9 @@ export default function Home() {
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center py-20">
-            <LoadingSpinner />
-          </div>
+          <div className="flex justify-center py-20"><LoadingSpinner /></div>
+        ) : isError ? (
+          <p role="alert" className="text-center py-12 text-gray-600">Featured products are temporarily unavailable.</p>
         ) : (
           <ProductGrid products={products} />
         )}

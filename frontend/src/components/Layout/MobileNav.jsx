@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
 import { X } from 'lucide-react';
 import { useUiStore } from '../../stores/uiStore';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function MobileNav() {
   const isMobileNavOpen = useUiStore((s) => s.isMobileNavOpen);
   const closeMobileNav = useUiStore((s) => s.closeMobileNav);
+  const { user } = useAuth();
 
   if (!isMobileNavOpen) return null;
 
@@ -24,7 +26,9 @@ export default function MobileNav() {
         </div>
         <Link to="/" onClick={closeMobileNav} className="min-h-11 flex items-center px-2 rounded-lg hover:bg-gray-50">Home</Link>
         <Link to="/shop" onClick={closeMobileNav} className="min-h-11 flex items-center px-2 rounded-lg hover:bg-gray-50">Shop</Link>
+        <Link to="/order-lookup" onClick={closeMobileNav} className="min-h-11 flex items-center px-2 rounded-lg hover:bg-gray-50">Order lookup</Link>
         <Link to="/profile" onClick={closeMobileNav} className="min-h-11 flex items-center px-2 rounded-lg hover:bg-gray-50">Profile</Link>
+        {user?.role === 'admin' && <Link to="/admin" onClick={closeMobileNav} className="min-h-11 flex items-center px-2 rounded-lg hover:bg-gray-50">Admin</Link>}
       </nav>
     </div>
   );

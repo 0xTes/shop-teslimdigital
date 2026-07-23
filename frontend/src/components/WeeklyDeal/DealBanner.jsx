@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { Clock, Tag } from 'lucide-react';
 import { useDeals } from '../../hooks/useDeals';
 

@@ -1,0 +1,152 @@
+openapi: 3.0.3
+info:
+  title: Teslim Digital Shop API
+  version: 1.1.0
+  description: Production API for catalog, checkout, customer accounts, and protected operations.
+servers:
+  - url: https://api.example.com/api
+security:
+  - bearerAuth: []
+paths:
+  /categories:
+    get: { summary: List categories, security: [], responses: { '200': { description: Categories } } }
+  /products:
+    get:
+      summary: List products
+      security: []
+      parameters:
+        - { name: search, in: query, schema: { type: string } }
+        - { name: category, in: query, schema: { type: string, format: uuid } }
+        - { name: sort, in: query, schema: { type: string, enum: [price-asc, price-desc, name] } }
+        - { name: page, in: query, schema: { type: integer, minimum: 1 } }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100 } }
+      responses: { '200': { description: Paginated products } }
+  /products/featured:
+    get: { summary: List featured products, security: [], responses: { '200': { description: Products } } }
+  /products/related:
+    get: { summary: List related products, security: [], responses: { '200': { description: Products } } }
+  /products/{slug}:
+    get:
+      summary: Get product by slug
+      security: []
+      parameters: [{ $ref: '#/components/parameters/slug' }]
+      responses: { '200': { description: Product }, '404': { $ref: '#/components/responses/NotFound' } }
+  /deals/current:
+    get: { summary: List active promotions, security: [], responses: { '200': { description: Deals } } }
+  /reviews/product/{productId}:
+    get:
+      summary: List product reviews
+      security: []
+      parameters: [{ $ref: '#/components/parameters/productId' }]
+      responses: { '200': { description: Reviews } }
+    post:
+      summary: Create review
+      security: [{}, { bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/productId' }]
+      requestBody: { $ref: '#/components/requestBodies/Review' }
+      responses: { '201': { description: Review created }, '400': { $ref: '#/components/responses/ValidationError' } }
+  /auth/register:
+    post:
+      summary: Register customer
+      security: []
+      requestBody: { $ref: '#/components/requestBodies/Register' }
+      responses: { '201': { description: JWT and public profile } }
+  /auth/login:
+    post:
+      summary: Log in
+      security: []
+      requestBody: { $ref: '#/components/requestBodies/Login' }
+      responses: { '200': { description: JWT and public profile }, '401': { $ref: '#/components/responses/Unauthorized' } }
+  /auth/forgot-password:
+    post:
+      summary: Send non-enumerating password reset email
+      security: []
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [email], properties: { email: { type: string, format: email } } } } } }
+      responses: { '200': { description: Generic confirmation } }
+  /auth/reset-password:
+    post:
+      summary: Reset password with signed token
+      security: []
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [token, password], properties: { token: { type: string }, password: { type: string, minLength: 8 } } } } } }
+      responses: { '200': { description: Password updated } }
+  /auth/me:
+    get: { summary: Current user, responses: { '200': { description: Public profile }, '401': { $ref: '#/components/responses/Unauthorized' } } }
+  /users/profile:
+    get: { summary: Current profile, responses: { '200': { description: Profile } } }
+    put: { summary: Update current profile, requestBody: { $ref: '#/components/requestBodies/Profile' }, responses: { '200': { description: Updated profile } } }
+  /users/addresses:
+    get: { summary: List saved addresses, responses: { '200': { description: Addresses } } }
+    post: { summary: Create saved address, requestBody: { $ref: '#/components/requestBodies/Address' }, responses: { '201': { description: Address } } }
+  /users/addresses/{addressId}:
+    put: { summary: Update owned address, parameters: [{ $ref: '#/components/parameters/addressId' }], requestBody: { $ref: '#/components/requestBodies/Address' }, responses: { '200': { description: Address } } }
+    delete: { summary: Delete owned address, parameters: [{ $ref: '#/components/parameters/addressId' }], responses: { '204': { description: Deleted } } }
+  /orders:
+    post:
+      summary: Guest or customer checkout
+      security: [{}, { bearerAuth: [] }]
+      requestBody: { $ref: '#/components/requestBodies/Checkout' }
+      responses: { '201': { description: Order confirmation }, '400': { $ref: '#/components/responses/ValidationError' } }
+  /orders/mine:
+    get: { summary: Current customer order history, responses: { '200': { description: Orders } } }
+  /orders/lookup:
+    get:
+      summary: Look up guest order
+      security: []
+      parameters:
+        - { name: orderNumber, in: query, required: true, schema: { type: string } }
+        - { name: email, in: query, required: true, schema: { type: string, format: email } }
+      responses: { '200': { description: Guest order }, '404': { $ref: '#/components/responses/NotFound' } }
+  /orders/{orderId}:
+    get: { summary: Get authenticated owner order, parameters: [{ $ref: '#/components/parameters/orderId' }], responses: { '200': { description: Order }, '403': { description: Not owner } } }
+  /admin/dashboard:
+    get: { summary: Admin dashboard metrics, responses: { '200': { description: Metrics }, '403': { description: Admin required } } }
+  /admin/orders:
+    get: { summary: List orders for admin, parameters: [{ name: status, in: query, schema: { type: string } }, { name: paymentStatus, in: query, schema: { type: string } }, { name: search, in: query, schema: { type: string } }], responses: { '200': { description: Paginated orders } } }
+  /admin/orders/{orderId}/status:
+    patch:
+      summary: Advance or cancel an order
+      parameters: [{ $ref: '#/components/parameters/orderId' }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [status], properties: { status: { type: string, enum: [paid, processing, shipped, delivered, cancelled] }, paymentStatus: { type: string, enum: [unpaid, paid, refunded] } } } } } }
+      responses: { '200': { description: Updated order }, '422': { description: Invalid state transition } }
+  /admin/orders/{orderId}/shipping:
+    patch: { summary: Update shipping metadata, parameters: [{ $ref: '#/components/parameters/orderId' }], requestBody: { $ref: '#/components/requestBodies/Shipping' }, responses: { '200': { description: Shipping } } }
+  /admin/customers:
+    get: { summary: List customers, responses: { '200': { description: Paginated customers } } }
+  /admin/products:
+    get: { summary: List all products, responses: { '200': { description: Products } } }
+    post: { summary: Create product, requestBody: { $ref: '#/components/requestBodies/Product' }, responses: { '201': { description: Product } } }
+  /admin/products/{productId}:
+    patch: { summary: Update product, parameters: [{ $ref: '#/components/parameters/productId' }], requestBody: { $ref: '#/components/requestBodies/Product' }, responses: { '200': { description: Product } } }
+  /admin/categories:
+    get: { summary: List admin categories, responses: { '200': { description: Categories } } }
+    post: { summary: Create category, responses: { '201': { description: Category } } }
+  /admin/categories/{categoryId}:
+    patch: { summary: Update category, parameters: [{ name: categoryId, in: path, required: true, schema: { type: string, format: uuid } }], responses: { '200': { description: Category } } }
+  /admin/deals:
+    get: { summary: List promotions, responses: { '200': { description: Deals } } }
+    post: { summary: Create promotion, responses: { '201': { description: Deal } } }
+  /admin/deals/{dealId}:
+    patch: { summary: Update promotion, parameters: [{ name: dealId, in: path, required: true, schema: { type: string, format: uuid } }], responses: { '200': { description: Deal } } }
+  /admin/reviews:
+    get: { summary: List reviews for moderation, responses: { '200': { description: Reviews } } }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    slug: { name: slug, in: path, required: true, schema: { type: string } }
+    productId: { name: productId, in: path, required: true, schema: { type: string, format: uuid } }
+    orderId: { name: orderId, in: path, required: true, schema: { type: string, format: uuid } }
+    addressId: { name: addressId, in: path, required: true, schema: { type: string, format: uuid } }
+  requestBodies:
+    Register: { required: true, content: { application/json: { schema: { type: object, required: [password, firstName, lastName], properties: { email: { type: string, format: email }, phone: { type: string }, password: { type: string, minLength: 8 }, firstName: { type: string }, lastName: { type: string } } } } } }
+    Login: { required: true, content: { application/json: { schema: { type: object, required: [password], properties: { email: { type: string }, phone: { type: string }, password: { type: string } } } } } }
+    Profile: { required: true, content: { application/json: { schema: { type: object } } } }
+    Address: { required: true, content: { application/json: { schema: { type: object, required: [firstName, lastName, address, city, state], properties: { firstName: { type: string }, lastName: { type: string }, address: { type: string }, city: { type: string }, state: { type: string }, isDefault: { type: boolean } } } } } }
+    Review: { required: true, content: { application/json: { schema: { type: object, required: [rating, authorName], properties: { rating: { type: integer, minimum: 1, maximum: 5 }, authorName: { type: string }, title: { type: string }, body: { type: string } } } } } }
+    Checkout: { required: true, content: { application/json: { schema: { type: object, required: [items, shipping], properties: { items: { type: array }, shipping: { type: object }, paymentMethod: { type: string }, paymentProvider: { type: string, enum: [manual, paystack, flutterwave, stripe] } } } } } }
+    Shipping: { required: true, content: { application/json: { schema: { type: object, properties: { carrier: { type: string }, trackingNumber: { type: string }, trackingUrl: { type: string, format: uri }, shippedAt: { type: string, format: date-time }, deliveredAt: { type: string, format: date-time } } } } } }
+    Product: { required: true, content: { application/json: { schema: { type: object } } } }
+  responses:
+    Unauthorized: { description: Authentication required or token invalid }
+    NotFound: { description: Resource not found }
+    ValidationError: { description: Invalid request input }
