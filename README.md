@@ -31,4 +31,4 @@ cd frontend && npm run lint && npm run build
 
 Deploy `backend/shop-teslimdigital-api` as the Railway service root and `frontend` as the Vercel project root. Railway applies migrations before starting and serves `GET /health`. Configure the variables documented in [Deployment](docs/DEPLOYMENT.md), then set the Railway public API URL in Vercel as `VITE_API_URL`.
 
-See [Architecture](docs/ARCHITECTURE.md), [API](docs/API.md), [Migrations](docs/MIGRATIONS.md), and [Deployment](docs/DEPLOYMENT.md) for the complete operational handoff.
+See [Architecture](docs/ARCHITECTURE.md), [API](docs/API.md), [Migrations](docs/MIGRATIONS.md), and [Deployment](docs/DEPLOYMENT.md) for the complete operational handoff. For an AI-safe, scope-controlled live rollout, start with the [Live Deployment Handoff](docs/LIVE_DEPLOYMENT_HANDOFF.md).
