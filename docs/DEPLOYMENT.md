@@ -23,10 +23,11 @@ Import the repository in Vercel and choose `frontend` as the project root. The i
 | Variable | Required | Notes |
 | --- | --- | --- |
 | `VITE_API_URL` | Yes | `https://<railway-api-domain>/api` |
-| `VITE_APP_URL` | Yes | Canonical storefront URL, normally `https://shop.teslim.digital` |
+| `VITE_APP_URL` | Yes | Canonical storefront URL, `https://teslimdigital.shop` for the intended public shop domain. |
+| `VITE_MAINTENANCE_MODE` | Optional | Set to `true` to render maintenance at every storefront URL; set to `false` for normal storefront operation. |
 | `VITE_GA_MEASUREMENT_ID` | Optional | Google Analytics measurement ID |
 
-Deploy after setting variables; Vite variables are compiled at build time. Verify the following production journeys: browse and search products, authenticated checkout, guest checkout and lookup, order history, password reset request, lifecycle update as an admin, and the `Visit Teslim Digital` footer link.
+Deploy after setting variables; Vite variables are compiled at build time. To activate maintenance, set `VITE_MAINTENANCE_MODE=true` in the Vercel production environment and redeploy. To restore the storefront, set it to `false` and redeploy again. The Vercel rewrite sends direct and refreshed nested URLs to the SPA entry point, so the build-time maintenance gate also covers paths such as `/shop`, `/cart`, and `/checkout`. Verify the following production journeys when maintenance is disabled: browse and search products, authenticated checkout, guest checkout and lookup, order history, password reset request, lifecycle update as an admin, and the `Visit Teslim Digital` footer link.
 
 ## Search and monitoring
 

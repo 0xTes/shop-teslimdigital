@@ -1,0 +1,217 @@
+.maintenance-page {
+  --maintenance-peach: #fdf6f0;
+  --maintenance-peach-deep: #f5e6d3;
+  --maintenance-teal: #0f766e;
+  --maintenance-teal-dark: #134e4a;
+  --maintenance-teal-pale: #ccfbf1;
+  --maintenance-ink: #193a38;
+  --maintenance-muted: #496561;
+  align-items: center;
+  background:
+    radial-gradient(circle at 10% 15%, rgba(204, 251, 241, 0.85), transparent 24rem),
+    radial-gradient(circle at 90% 83%, rgba(245, 230, 211, 0.92), transparent 26rem),
+    var(--maintenance-peach);
+  box-sizing: border-box;
+  color: var(--maintenance-ink);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.maintenance-page *,
+.maintenance-page *::before,
+.maintenance-page *::after {
+  box-sizing: inherit;
+}
+
+.maintenance-page__skip-link {
+  background: var(--maintenance-teal-dark);
+  border-radius: 0.5rem;
+  color: white;
+  font-weight: 700;
+  left: 1rem;
+  padding: 0.75rem 1rem;
+  position: fixed;
+  text-decoration: none;
+  top: -5rem;
+  transition: top 160ms ease;
+  z-index: 2;
+}
+
+.maintenance-page__skip-link:focus {
+  top: 1rem;
+}
+
+.maintenance-page__main {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  max-width: 46rem;
+  outline: none;
+  position: relative;
+  width: 100%;
+}
+
+.maintenance-page__card {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  border-radius: 1.5rem;
+  box-shadow: 0 1.5rem 4.5rem rgba(19, 78, 74, 0.12);
+  padding: clamp(2rem, 8vw, 4.75rem);
+  position: relative;
+  text-align: center;
+  width: 100%;
+  z-index: 1;
+}
+
+.maintenance-page__brand {
+  align-items: center;
+  color: var(--maintenance-teal-dark);
+  display: inline-flex;
+  font-size: 0.95rem;
+  font-weight: 800;
+  gap: 0.75rem;
+  letter-spacing: 0.01em;
+}
+
+.maintenance-page__icon {
+  align-items: center;
+  background: var(--maintenance-teal-pale);
+  border-radius: 999px;
+  display: inline-flex;
+  height: 2.75rem;
+  justify-content: center;
+  width: 2.75rem;
+}
+
+.maintenance-page__eyebrow {
+  color: var(--maintenance-teal);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  margin: 3rem 0 0.85rem;
+  text-transform: uppercase;
+}
+
+.maintenance-page h1 {
+  color: var(--maintenance-teal-dark);
+  font-size: clamp(2.35rem, 7vw, 4.75rem);
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+  margin: 0;
+}
+
+.maintenance-page__message {
+  color: var(--maintenance-muted);
+  font-size: clamp(1rem, 2.5vw, 1.18rem);
+  line-height: 1.7;
+  margin: 1.6rem auto 0;
+  max-width: 35rem;
+}
+
+.maintenance-page__contact {
+  align-items: flex-start;
+  background: var(--maintenance-teal-pale);
+  border-radius: 1rem;
+  color: var(--maintenance-teal-dark);
+  display: flex;
+  gap: 0.75rem;
+  margin: 2.25rem auto 0;
+  max-width: 31rem;
+  padding: 1rem 1.1rem;
+  text-align: left;
+}
+
+.maintenance-page__contact svg {
+  flex: 0 0 auto;
+  margin-top: 0.1rem;
+}
+
+.maintenance-page__contact p {
+  line-height: 1.55;
+  margin: 0;
+}
+
+.maintenance-page a:not(.maintenance-page__skip-link) {
+  border-radius: 0.2rem;
+  color: var(--maintenance-teal-dark);
+  font-weight: 800;
+  text-decoration-thickness: 0.12em;
+  text-underline-offset: 0.18em;
+}
+
+.maintenance-page a:not(.maintenance-page__skip-link):hover {
+  color: var(--maintenance-teal);
+}
+
+.maintenance-page a:focus-visible {
+  outline: 3px solid var(--maintenance-teal);
+  outline-offset: 3px;
+}
+
+.maintenance-page__footer {
+  align-items: center;
+  color: var(--maintenance-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  gap: 0.55rem;
+  justify-content: center;
+  padding: 1.5rem 0 0.25rem;
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+.maintenance-page__footer a {
+  font-weight: 700;
+}
+
+.maintenance-page__ornament {
+  border: 1px solid rgba(15, 118, 110, 0.22);
+  border-radius: 50%;
+  height: 16rem;
+  position: absolute;
+  width: 16rem;
+}
+
+.maintenance-page__ornament--top {
+  right: -8.5rem;
+  top: 7%;
+}
+
+.maintenance-page__ornament--bottom {
+  bottom: 5%;
+  left: -9rem;
+}
+
+@media (max-width: 34rem) {
+  .maintenance-page {
+    padding: 1rem;
+  }
+
+  .maintenance-page__card {
+    border-radius: 1.2rem;
+  }
+
+  .maintenance-page__eyebrow {
+    margin-top: 2.25rem;
+  }
+
+  .maintenance-page__footer {
+    padding-top: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .maintenance-page *,
+  .maintenance-page *::before,
+  .maintenance-page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
